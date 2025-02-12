@@ -1,0 +1,15 @@
+2025-02-09 13:28:37.642717 - write() argument must be str, not tuple
+2025-02-09 13:36:26.212215 - write() argument must be str, not tuple
+2025-02-09 13:37:01.385340 - write() argument must be str, not tuple
+2025-02-09 13:37:31.543157 - not enough values to unpack (expected 3, got 1)
+2025-02-09 14:33:14.397088 - write() argument must be str, not tuple
+2025-02-09 14:54:33.124330 - write() argument must be str, not tuple
+
+2025-02-12 00:54:54.187338 - test
+2025-02-12 00:57:14.497448 - test
+2025-02-12 09:57:53.137408 - test
+2025-02-12 17:58:43.148258 - test
+2025-02-12 18:02:28.015711 - test
+2025-02-12 18:05:46.115008 - test
+2025-02-12 18:06:03.670819 - test
+2025-02-12 19:30:06.939840 - test

@@ -1,0 +1,153 @@
+import turtle
+import time
+import random
+
+screen_size = 200
+space = 15
+bat_size = 20
+screen = turtle.Screen()
+screen.setworldcoordinates(0,0,screen_size,screen_size)
+screen.bgcolor(0,0,0)
+pen = turtle.Turtle()
+pen.ht()
+pen.speed(screen_size/2)
+pen.penup()
+pen.right(90)
+delay = 0.01
+random_faktor = 20
+tolerance = 5
+score = 0
+bat_speed = 1
+ball_speed = 2
+
+class objekts:
+  
+  def __init__(self, shape, color, size):
+    self.shape = shape
+    self.color = color
+    self.size = size
+    
+  def draw(self, position):
+    pen.goto(position)
+    
+    if self.shape[0] == "bat":
+      if self.shape[1] == "horizontal": pen.right(90)
+      pen.pendown()
+      pen.color(self.color)
+      pen.begin_fill()
+      pen.forward(self.size/2)
+      pen.right(90)
+      pen.forward(2)
+      pen.right(90)
+      pen.forward(self.size)
+      pen.right(90)
+      pen.forward(2)
+      pen.right(90)
+      pen.forward(self.size)
+      pen.end_fill()
+      pen.penup()
+      if self.shape[1] == "horizontal": pen.left(90)
+      
+    if self.shape == "ball":
+      pen.forward(self.size)
+      pen.right(90)
+      pen.forward(self.size)
+      pen.color(self.color)
+      pen.begin_fill()
+      pen.circle(self.size)
+      pen.end_fill()
+      pen.penup()
+      pen.back(self.size)
+      pen.left(90)  
+      pen.back(self.size)
+      
+def clear():
+  pen.penup()
+  pen.goto(0,0)
+  pen.pendown()
+  pen.color(0,0,0)
+  pen.begin_fill()
+  pen.goto(0,screen_size)
+  pen.goto(screen_size,screen_size)
+  pen.goto(screen_size,0)
+  pen.goto(0,0)
+  pen.end_fill()
+  
+pen.tracer(0)
+
+bats = []
+for i in range(4):
+  if (i % 2) == 0: orientation = "vertical"
+  else: orientation = "horizontal"
+  bats.append(objekts(("bat",orientation),"red",bat_size))
+  
+bat_coordinates = [(space,screen_size/2),(screen_size/2,space),(screen_size-space,screen_size/2),(screen_size/2,screen_size-space)]
+for i in range(len(bats)):
+  bats[i].draw(bat_coordinates[i])
+
+obj3 = objekts("ball","red", 2)
+obj3_cord = (screen_size/2,screen_size/2)
+obj3.draw(obj3_cord)
+pen.tracer(1)
+
+move_direction = 0
+
+def up():
+  global move_direction
+  move_direction = bat_speed
+def down():
+  global move_direction
+  move_direction = -bat_speed
+def stop():
+  global move_direction
+  move_direction = 0
+  
+def vector_length(vector):
+  length = (vector[0]**ball_speed+vector[1]**2)**.5
+  vector = (vector[0]*(1/length),vector[1]*(1/length))
+  return vector
+
+def bounce(wall, last_vector, orientation):
+  if orientation == "vertical":
+    move_vector = ((last_vector[0]+random.randint(-5,5)/random_faktor)*(-1),last_vector[1]+random.randint(-5,5)/random_faktor)
+  elif orientation == "horizontal":
+    move_vector = ((last_vector[0]+random.randint(-5,5)/random_faktor),(last_vector[1]+random.randint(-5,5)/random_faktor)*(-1))
+  else:
+    move_vector = (2,0)
+  move_vector = vector_length(move_vector)
+  return move_vector
+
+move_vector = bounce(False, (0,0), "vertical")
+
+#for j in range(1):
+while True:
+  time.sleep(delay)
+  pen.tracer(0)
+  screen.listen()
+  screen.onkey(up,"w")
+  screen.onkey(down,"s")
+  screen.onkey(stop,"x")
+  clear()
+  
+  for i in range(len(bats)):
+    x, y = bat_coordinates[i]
+    if (i % 2) == 0: y += move_direction
+    else: x += move_direction
+    bat_coordinates[i] = x, y
+    bats[i].draw(bat_coordinates[i])
+    if (i % 2) != 0: move_direction *= -1
+  if bat_coordinates[0][1] >= screen_size-space or bat_coordinates[0][1] <= space:
+    move_direction = 0
+  
+  obj3_cord = (obj3_cord[0]+move_vector[0],obj3_cord[1]+move_vector[1])
+  obj3.draw(obj3_cord)
+  for i in range(len(bats)):
+    if (i % 2) == 0: cord = 1
+    else: cord = 0
+    
+    if (obj3_cord[0] <= space or obj3_cord[0] >= screen_size-space or obj3_cord[1] <= space or obj3_cord[1] >= screen_size-space) and (bat_coordinates[i][cord]-bat_size+tolerance < obj3_cord[cord] < bat_coordinates[i][cord]+bat_size+tolerance):
+      move_vector = bounce("bat", move_vector, bats[i].shape[1])
+    if (obj3_cord[0] <= space or obj3_cord[0] >= screen_size-space or obj3_cord[1] <= space or obj3_cord[1] >= screen_size-space) and not any(bat_coordinates[j][cord]-bat_size+tolerance < obj3_cord[cord] < bat_coordinates[j][cord]+bat_size+tolerance for j in range(len(bats))):
+      obj3_cord = (screen_size/2,screen_size/2)
+    
+  pen.tracer(1)

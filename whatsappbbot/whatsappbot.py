@@ -125,7 +125,6 @@ def test():
     time.sleep(1)
     driver.quit()
 
-log_error("test")
 if datetime.datetime.now().hour >= 13: test()
 else: print("No message send, to early.")
 

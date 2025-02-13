@@ -10,7 +10,7 @@ def change_wallpaper(image_path):
 def get_apod():
     # Define the base URL
     base_url = "https://apod.nasa.gov/apod/"
-    save_folder = "bg_change/images"
+    save_folder = "C:\\Users\\lecke\\.vscode\\python\\bg_change\\images\\"
 
     # Create the folder if it doesn't exist
     os.makedirs(save_folder, exist_ok=True)
@@ -46,7 +46,6 @@ def get_apod():
 script_dir = os.path.dirname(os.path.abspath(__file__))
 script_dir = script_dir.replace("bg_change", "")
   # Get script's directory
-
 image_path = get_apod()
 
-change_wallpaper(script_dir + image_path)
+change_wallpaper(image_path)

@@ -9,6 +9,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+import os
 #from poemoftheday import poems
 #from pod import poem_of_the_day
 
@@ -20,7 +21,7 @@ def log_error(error_message):
 
 def last_message_was_yesterday(contact_name, message, time, repeat):
     try:
-        with open("log.txt", "r") as file:
+        with open("C:\\Users\\lecke\\.vscode\\python\\whatsappbbot\\log.txt", "r") as file:
             lines = file.readlines()
 
         for line in reversed(lines):
@@ -104,7 +105,7 @@ def test():
 
     planned_messages = [
         {"name": "Jonas", "message": get_pod(), "time": "2006-03-05 00:00:00.0", "repeat": "year"},
-        {"name": "Miriam", "message": get_pod(), "time": "","repeat": "daily"},
+        {"name": "Jonas", "message": get_pod(), "time": "","repeat": "daily"},
 
     ]
 
@@ -113,7 +114,7 @@ def test():
 
             if item["repeat"] == "daily" and last_message_was_yesterday(item["name"], item["message"].replace('\n', ' '), item["time"], item["repeat"]):
                 change_contact(item["name"])
-                with open("log.txt", "a") as file:
+                with open("C:\\Users\\lecke\\.vscode\\python\\whatsappbbot\\log.txt", "a") as file:
                     file.write(f"{datetime.datetime.now()},{item['name']},{item['message'].replace('\n', ' ')}\n")
                 print(f"Sending message to [{item["name"]}]")
                 send_message(item["message"])

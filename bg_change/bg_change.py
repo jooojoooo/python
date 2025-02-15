@@ -27,20 +27,24 @@ def get_apod():
         image_url = base_url + image_href  # Full URL of the image
         print(image_url)
         image_name = os.path.basename(image_href)  # Extract file name
+        image_path = os.path.join(save_folder, image_name)
+        if not os.path.isfile(image_path):
 
-        # Download the image
-        img_response = requests.get(image_url, stream=True)
-        if img_response.status_code == 200:
-            image_path = os.path.join(save_folder, image_name)
-            with open(image_path, "wb") as img_file:
-                for chunk in img_response.iter_content(1024):
-                    img_file.write(chunk)
-            print(f"✅ Image downloaded: {image_path}")
-            return image_path
-        else:
-            print("❌ Failed to download the image.")
+            # Download the image
+            img_response = requests.get(image_url, stream=True)
+            if img_response.status_code == 200:
+
+                with open(image_path, "wb") as img_file:
+                    for chunk in img_response.iter_content(1024):
+                        img_file.write(chunk)
+                print(f"✅ Image downloaded: {image_path}")
+                return image_path
+            else:
+                print("❌ Failed to download the image.")
+        else: print("❌ Image already downloaded")
     else:
         print("❌ No matching image link found.")
+
 
 
 script_dir = os.path.dirname(os.path.abspath(__file__))

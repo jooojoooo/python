@@ -109,15 +109,15 @@ def test():
 
     ]
 
-    def fun(planned_messages):
+def fun(planned_messages):
         for item in planned_messages:
 
             if item["repeat"] == "daily" and last_message_was_yesterday(item["name"], item["message"].replace('\n', ' '), item["time"], item["repeat"]):
-                change_contact(item["name"])
+                test().change_contact(item["name"])
                 with open("C:\\Users\\lecke\\.vscode\\python\\whatsappbbot\\log.txt", "a") as file:
                     file.write(f"{datetime.datetime.now()},{item['name']},{item['message'].replace('\n', ' ')}\n")
                 print(f"Sending message to [{item["name"]}]")
-                send_message(item["message"])
+                test().send_message(item["message"])
 
             else:
                 print(f"No message sent to {item['name']}")

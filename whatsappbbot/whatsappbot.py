@@ -13,17 +13,19 @@ import os
 #from poemoftheday import poems
 #from pod import poem_of_the_day
 
+
 # Error logging function
 def log_error(error_message):
     with open("C:\\Users\\lecke\\.vscode\\python\\whatsappbbot\\error_log.txt", "a") as error_file:
         error_file.write(f"{datetime.datetime.now()} - {error_message}\n")
 
 
-def last_message_was_yesterday(contact_name, message, time, repeat):
+def allow_to_send(contact_name, message, send_time, repeat):
     try:
         with open("C:\\Users\\lecke\\.vscode\\python\\whatsappbbot\\log.txt", "r") as file:
             lines = file.readlines()
 
+        if send_time: send_time = datetime.datetime.strptime(send_time, "%Y-%m-%d %H:%M:%S.%f")
         for line in reversed(lines):
             parts = line.strip().split(',', 2)
 
@@ -31,12 +33,24 @@ def last_message_was_yesterday(contact_name, message, time, repeat):
                 continue  # Skip lines that don't have enough values
 
             log_date, name, log_message = parts
-            log_date = datetime.datetime.strptime(log_date, "%Y-%m-%d %H:%M:%S.%f")
+            log_date = datetime.datetime.strptime(log_date, "%Y-%m-%d %H:%M:%S.%f").replace(hour=0,minute=0,second=0,microsecond=0)
 
 
             if (name == contact_name and log_message == message):
-                return (datetime.datetime.now() - log_date).days >= 1
-            
+                time_diff = datetime.datetime.now() - log_date
+                if repeat == "day": return time_diff.days >= 1
+                elif repeat == "week": return time_diff.days >= 7
+                elif repeat == "month": 
+                    return (log_date.day == send_time.day == datetime.datetime.now().day and  
+                    log_date.month != send_time.month)
+                elif repeat == "year": 
+                    return (log_date.replace(year=1) == send_time.replace(year=1) and 
+                    time_diff.days // 365 >= 1 and 
+                    datetime.datetime.now().replace(year=1,hour=0,minute=0,second=0,microsecond=0) == send_time.replace(year=1))
+
+        if send_time: 
+            if repeat == "year": return datetime.datetime.now().replace(year=1,hour=0,minute=0,second=0,microsecond=0) == send_time.replace(year=1)
+            if repeat == "month": return datetime.datetime.now().day == send_time.day
         return True
     except FileNotFoundError:
         return True
@@ -104,20 +118,22 @@ def test():
         print(f"✅ Message sent successfully! [{message.replace('\n', ' ')}]")
 
     planned_messages = [
-        {"name": "Jonas", "message": get_pod(), "time": "2006-03-05 00:00:00.0", "repeat": "year"},
-        {"name": "Jonas", "message": get_pod(), "time": "","repeat": "daily"},
+        {"name": "Jonas", "message": "HAPPY YEAR", "send_time": "2006-03-05 00:00:00.0", "repeat": "year"},
+        {"name": "Jonas", "message": "HAPPY MONTH", "send_time": "2006-02-15 00:00:00.0", "repeat": "month"},
+        #{"name": "Jonas", "message": "HAPPY WEEK", "send_time": "2006-02-16 00:00:00.0", "repeat": "week"},
+        {"name": "Miriam", "message": get_pod(), "send_time": "","repeat": "day"},
 
     ]
 
-def fun(planned_messages):
+    def fun(planned_messages):
         for item in planned_messages:
 
-            if item["repeat"] == "daily" and last_message_was_yesterday(item["name"], item["message"].replace('\n', ' '), item["time"], item["repeat"]):
-                test().change_contact(item["name"])
+            if allow_to_send(item["name"], item["message"].replace('\n', ' '), item["send_time"], item["repeat"]):
+                change_contact(item["name"])
                 with open("C:\\Users\\lecke\\.vscode\\python\\whatsappbbot\\log.txt", "a") as file:
                     file.write(f"{datetime.datetime.now()},{item['name']},{item['message'].replace('\n', ' ')}\n")
                 print(f"Sending message to [{item["name"]}]")
-                test().send_message(item["message"])
+                send_message(item["message"])
 
             else:
                 print(f"No message sent to {item['name']}")
@@ -126,7 +142,7 @@ def fun(planned_messages):
     time.sleep(1)
     driver.quit()
 
-if datetime.datetime.now().hour >= 13: test()
+if datetime.datetime.now().hour >= 1: test()
 else: print("No message send, to early.")
 
 #except Exception as e:

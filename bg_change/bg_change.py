@@ -7,10 +7,10 @@ def change_wallpaper(image_path):
     # SPI_SETDESKWALLPAPER = 20
     ctypes.windll.user32.SystemParametersInfoW(20, 0, image_path, 3)
 
-def get_apod():
+def get_apod(script_dir):
     # Define the base URL
     base_url = "https://apod.nasa.gov/apod/"
-    save_folder = "C:\\Users\\lecke\\.vscode\\python\\bg_change\\images\\"
+    save_folder = f"{script_dir}\\images\\"
 
     # Create the folder if it doesn't exist
     os.makedirs(save_folder, exist_ok=True)
@@ -48,8 +48,7 @@ def get_apod():
 
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
-script_dir = script_dir.replace("bg_change", "")
+#script_dir = script_dir.replace("bg_change", "")
   # Get script's directory
-image_path = get_apod()
-
+image_path = get_apod(script_dir)
 change_wallpaper(image_path)
